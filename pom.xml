@@ -108,6 +108,12 @@
         <version>3.21.2</version>
           <dependencies>
             <dependency>
+              <groupId>io.quarkus</groupId>
+              <artifactId>quarkus-container-image-jib</artifactId>
+              <version>3.7.3</version>
+            </dependency>
+
+            <dependency>
               <groupId>net.sourceforge.pmd</groupId>
               <artifactId>pmd-core</artifactId>
               <version>	6.55.0</version>
