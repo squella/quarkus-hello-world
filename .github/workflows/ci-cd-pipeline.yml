@@ -30,5 +30,3 @@ jobs:
 
       - name: Build and Push Native Image to Amazon ECR
         run: ./mvnw clean package
-        env:
-          QUARKUS_CONTAINER_IMAGE_PUSH: true
