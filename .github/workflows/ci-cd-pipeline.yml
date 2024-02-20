@@ -1,4 +1,4 @@
-name: Build and Push to ECR with Quarkus
+name: Build, Push to ECR, and Deploy to EKS with Quarkus
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,3 +30,12 @@ jobs:
 
       - name: Build and Push Native Image to Amazon ECR
         run: ./mvnw clean package
+
+      - name: Configure kubectl for EKS
+        run: |
+          aws eks update-kubeconfig --name quarkus --region ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to EKS
+        run: |
+          kubectl apply -f deployment.yaml
+          kubectl rollout status deployment/quarkus-app
