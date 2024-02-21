@@ -38,5 +38,5 @@ jobs:
       # Despliegue en EKS
       - name: Deploy to EKS
         run: |
-          ls -la
-          kubectl apply -f target/kubernetes/kubernetes.json
+          ls -la target/kubernetes/
+          kubectl apply -f target/kubernetes/kubernetes.yml
