@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  build-and-deploy:
+  build-push-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -31,13 +31,12 @@ jobs:
       - name: Build and Push Native Image to Amazon ECR
         run: ./mvnw clean package
 
-      # A continuación, los pasos para configurar kubectl y desplegar en EKS
-
+      # Configurar kubectl para EKS
       - name: Configure kubectl for EKS
-        run: |
-          aws eks update-kubeconfig --name quarkus --region ${{ secrets.AWS_REGION }}
+        run: aws eks update-kubeconfig --name quarkus --region ${{ secrets.AWS_REGION }}
 
+      # Despliegue en EKS
       - name: Deploy to EKS
         run: |
-          kubectl apply -f deployment.yml
-          kubectl rollout status deployment/quarkus-app
+          ls -la
+          kubectl apply -f target/kubernetes/kubernetes.yml
