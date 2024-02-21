@@ -33,14 +33,10 @@ jobs:
 
       # Configurar kubectl para EKS
       - name: Configure kubectl for EKS
-        run: aws eks update-kubeconfig --name quarkus --region ${{ secrets.AWS_REGION }} --kubeconfig my-kubeconfig
+        run: aws eks update-kubeconfig --name quarkus --region ${{ secrets.AWS_REGION }}
 
-        env:
-          KUBECONFIG: my-kubeconfig
-
+      # Despliegue en EKS
       - name: Deploy to EKS
         run: |
           ls -la target/kubernetes/
           kubectl apply -f target/kubernetes/kubernetes.yml
-        env:
-          KUBECONFIG: my-kubeconfig
