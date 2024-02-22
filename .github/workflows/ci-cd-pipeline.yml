@@ -84,7 +84,7 @@ jobs:
       - name: Integration Test
         run: |
           echo "Testing the deployed application"
-          response=$(curl -s http://aeaf7296a50444e25b82e4145761ef25-13049291.eu-west-1.elb.amazonaws.com/hello)
+          response=$(curl -s http://afc5726a5a1ba4f01985bcecf1c8cb3e-1798522209.eu-west-1.elb.amazonaws.com/hello)
           echo "Response from application: $response"
           [[ "$response" == *"Hello"* ]] || exit 1
 
@@ -104,6 +104,6 @@ jobs:
       - name: Integration Test
         run: |
           echo "Testing the deployed application"
-          response=$(curl -s http://aeaf7296a50444e25b82e4145761ef25-13049291.eu-west-1.elb.amazonaws.com/hello)
+          response=$(curl -s http://afc5726a5a1ba4f01985bcecf1c8cb3e-1798522209.eu-west-1.elb.amazonaws.com/hello)
           echo "Response from application: $response"
           [[ "$response" == *"Hello"* ]] || exit 1
