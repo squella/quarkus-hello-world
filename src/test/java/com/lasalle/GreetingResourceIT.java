@@ -14,7 +14,7 @@ class GreetingResourceIT {
           .when().get("/hello")
           .then()
              .statusCode(200)
-             .body(is("Hello World"));
+             .body(is("Hello World V2"));
     }
 
 }
