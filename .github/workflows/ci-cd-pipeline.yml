@@ -1,8 +1,10 @@
 name: Build, Push to ECR, and Deploy to EKS with Quarkus app
+
 on:
   pull_request:
     branches:
       - master
+
 jobs:
   commit-stage:
     runs-on: ubuntu-latest
@@ -33,7 +35,7 @@ jobs:
         run: mvn pmd:check
 
   build-push-deploy:
-    needs: integration-test
+    needs: commit-stage
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -101,9 +103,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Integration Test
+      - name: Smoke Test
         run: |
-          echo "Testing the deployed application"
+          echo "Performing smoke test on the deployed application"
           response=$(curl -s http://afc5726a5a1ba4f01985bcecf1c8cb3e-1798522209.eu-west-1.elb.amazonaws.com/hello)
           echo "Response from application: $response"
           [[ "$response" == *"Hello"* ]] || exit 1
