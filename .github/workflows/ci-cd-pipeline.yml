@@ -25,6 +25,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
       - name: Generate Image Tag
         id: image-tag
         run: echo "::set-output name=tag::$(date +%Y%m%d%H%M%S)-$(git rev-parse --short HEAD)"
@@ -45,7 +48,6 @@ jobs:
         run: |
           sed -i "s|quarkus:latest|quarkus:${IMAGE_TAG}|g" target/kubernetes/kubernetes.yml
           kubectl apply -f target/kubernetes/kubernetes.yml
-          kubectl expose deployment quarkus-hello-world --type=LoadBalancer --name=quarkus-hello-world-service --port=80 --target-port=8080
 
       # Despliegue en EKS
       #- name: Deploy to EKS
