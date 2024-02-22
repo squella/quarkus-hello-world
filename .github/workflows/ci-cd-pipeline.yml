@@ -29,7 +29,10 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build and Push Native Image to Amazon ECR
-        run: ./mvnw clean package
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          ./mvnw clean package -Dquarkus.container-image.tag=${IMAGE_TAG}
 
       # Configurar kubectl para EKS
       - name: Configure kubectl for EKS
