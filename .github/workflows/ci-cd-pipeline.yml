@@ -6,6 +6,34 @@ on:
       - master
 
 jobs:
+  commit-stage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Compile the code
+        run: mvn compile
+
+      - name: Run unit tests
+        run: mvn test
+
+      - name: Run PMD analysis
+        run: mvn pmd:check
+
   build-push-deploy:
     runs-on: ubuntu-latest
     steps:
