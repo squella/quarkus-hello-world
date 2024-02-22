@@ -89,9 +89,9 @@ jobs:
         run: |
           ./mvnw clean package -Dquarkus.container-image.tag=${IMAGE_TAG}
 
-      - name: Prepare Kubernetes Deployment Files
-        run: |
-          bash prepare-k8s-files.sh
+      #- name: Prepare Kubernetes Deployment Files
+      #  run: |
+      #    bash prepare-k8s-files.sh
 
       # Configurar kubectl para EKS
       - name: Configure kubectl for EKS
