@@ -34,7 +34,7 @@ jobs:
         run: mvn pmd:check
 
   build-push-deploy:
-    needs: commit-stage
+    needs: integration-test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -56,9 +56,6 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
-      #      - name: Update Application Version
-      #        run: mvn versions:set -DnewVersion=${{ github.sha }}-SNAPSHOT
-
       - name: Build and Push Native Image to Amazon ECR
         env:
           IMAGE_TAG: ${{ github.sha }}
@@ -66,13 +63,11 @@ jobs:
           ./mvnw clean package -Dquarkus.container-image.tag=${IMAGE_TAG}
 
       - name: Configure kubectl for EKS
-        run: |
-          aws eks update-kubeconfig --name quarkus --region ${{ secrets.AWS_REGION }}
+        run: aws eks update-kubeconfig --name quarkus --region ${{ secrets.AWS_REGION }}
 
-      - name: Apply Kubernetes Configuration
+      - name: Deploy to EKS
         run: |
-          kubectl apply -f target/kubernetes/kubernetes-deploy.yml
-          
+          kubectl apply -f target/kubernetes/kubernetes.yml
 
   integration-test:
     needs: build-push-deploy
