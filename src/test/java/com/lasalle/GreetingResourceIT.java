@@ -13,7 +13,7 @@ class GreetingResourceIT {
           .when().get("http://afc5726a5a1ba4f01985bcecf1c8cb3e-1798522209.eu-west-1.elb.amazonaws.com/hello")
           .then()
              .statusCode(200)
-             .body(is("Hello"));
+             .body(is("Hello Lord"));
     }
 
 }
