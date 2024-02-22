@@ -28,30 +28,14 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Generate Image Tag
-        id: image-tag
-        run: echo "::set-output name=tag::$(date +%Y%m%d%H%M%S)-$(git rev-parse --short HEAD)"
-
       - name: Build and Push Native Image to Amazon ECR
-        env:
-          IMAGE_TAG: ${{ steps.image-tag.outputs.tag }}
-        run: |
-          ./mvnw clean package -Dquarkus.container-image.tag=${IMAGE_TAG}
+        run: ./mvnw clean package
 
       # Configurar kubectl para EKS
       - name: Configure kubectl for EKS
         run: aws eks update-kubeconfig --name quarkus --region ${{ secrets.AWS_REGION }}
 
-      - name: Deploy to EKS
-        env:
-          IMAGE_TAG: ${{ steps.image-tag.outputs.tag }}
-        run: |
-          sed -i "s|quarkus:latest|quarkus:${IMAGE_TAG}|g" target/kubernetes/kubernetes.yml
-          kubectl apply -f target/kubernetes/kubernetes.yml
-
       # Despliegue en EKS
-      #- name: Deploy to EKS
-      #  run: |
-      #    kubectl apply -f target/kubernetes/kubernetes.yml
-      #    kubectl expose deployment quarkus-hello-world --type=LoadBalancer --name=quarkus-hello-world-service --port=80 --target-port=8080
-
+      - name: Deploy to EKS
+        run: |
+          kubectl apply -f target/kubernetes/kubernetes.yml
