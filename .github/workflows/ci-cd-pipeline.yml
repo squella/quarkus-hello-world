@@ -98,11 +98,17 @@ jobs:
         run: |
             aws eks update-kubeconfig --name quarkus --region ${{ secrets.AWS_REGION }}
             kubectl apply -f target/kubernetes/kubernetes.yml
-            bash prepare-k8s-files.sh
-            bash deploy-green-loadbalancer.sh
       # Despliegue en EKS
       #- name: Deploy to EKS
       #  run: |
       #    ls -la
       #    ./prepare-k8s-files.sh
       #    ./deploy-green-loadbalancer.sh
+  blue-green:
+    needs: build-push-deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure kubectl for EKS
+        run: |
+          bash prepare-k8s-files.sh
+          bash deploy-green-loadbalancer.sh
