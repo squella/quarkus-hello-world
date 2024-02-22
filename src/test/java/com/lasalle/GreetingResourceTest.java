@@ -10,7 +10,7 @@ class GreetingResourceTest {
     void testHelloEndpoint() {
         GreetingResource resource = new GreetingResource();
         String result = resource.hello();
-        assertThat(result, is("Hello World V2"));
+        assertThat(result, is("Hello World"));
     }
 
 }

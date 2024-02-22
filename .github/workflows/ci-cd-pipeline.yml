@@ -146,7 +146,7 @@ jobs:
           echo "Testing the deployed application"
           response=$(curl -s http://aeaf7296a50444e25b82e4145761ef25-13049291.eu-west-1.elb.amazonaws.com/hello)
           echo "Response from application: $response"
-          [[ "$response" == *"Hello kk"* ]] || exit 1
+          [[ "$response" == *"Hello World"* ]] || exit 1
 
   smoke-test:
     needs: integration-test
@@ -166,4 +166,4 @@ jobs:
           echo "Testing the deployed application"
           response=$(curl -s http://aeaf7296a50444e25b82e4145761ef25-13049291.eu-west-1.elb.amazonaws.com/hello)
           echo "Response from application: $response"
-          [[ "$response" == *"Hello kk"* ]] || exit 1
+          [[ "$response" == *"Hello World"* ]] || exit 1
