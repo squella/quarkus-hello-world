@@ -34,29 +34,6 @@ jobs:
       - name: Run PMD analysis
         run: mvn pmd:check
 
-  #  integration-test:
-  #    needs: commit-stage
-  #    runs-on: ubuntu-latest
-  #    steps:
-  #      - name: Checkout code
-  #        uses: actions/checkout@v2
-  #
-  #      - name: Set up JDK 17
-  #        uses: actions/setup-java@v2
-  #        with:
-  #          java-version: '17'
-  #          distribution: 'temurin'
-  #
-  #      - name: Cache Maven packages
-  #        uses: actions/cache@v2
-  #        with:
-  #          path: ~/.m2
-  #          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-  #          restore-keys: ${{ runner.os }}-m2
-  #
-  #      - name: Run integration tests
-  #        run: mvn verify
-
   build-push-deploy:
     needs: commit-stage
     runs-on: ubuntu-latest
@@ -104,11 +81,30 @@ jobs:
       #    ls -la
       #    ./prepare-k8s-files.sh
       #    ./deploy-green-loadbalancer.sh
-  blue-green:
+  #blue-green:
+  #  needs: build-push-deploy
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: Configure kubectl for EKS
+  #      run: |
+  #        bash prepare-k8s-files.sh
+  #        bash deploy-green-loadbalancer.sh
+  integration-test:
     needs: build-push-deploy
     runs-on: ubuntu-latest
     steps:
-      - name: Configure kubectl for EKS
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Integration Test
         run: |
-          bash prepare-k8s-files.sh
-          bash deploy-green-loadbalancer.sh
+          echo "Testing the deployed application"
+          response=$(curl -s http://aeaf7296a50444e25b82e4145761ef25-13049291.eu-west-1.elb.amazonaws.com/hello)
+          echo "Response from application: $response"
+          [[ "$response" == *"Hello World V2"* ]] || exit 1
