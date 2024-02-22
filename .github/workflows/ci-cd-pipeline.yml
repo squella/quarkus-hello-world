@@ -92,7 +92,7 @@ jobs:
       #    ./deploy-green-loadbalancer.sh
 
   blue-green:
-    needs: build-push-deploy
+    needs: smoke-test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -121,23 +121,16 @@ jobs:
           BASE_DIR="target/kubernetes/"
           ORIGINAL_FILE="${BASE_DIR}kubernetes.yml"
           BLUE_FILE="${BASE_DIR}kubernetes-blue.yml"
-          GREEN_FILE="${BASE_DIR}kubernetes-green.yml"
-          
-          # Crear archivos blue y green a partir del original
+          GREEN_FILE="${BASE_DIR}kubernetes-green.yml"   
           cp "$ORIGINAL_FILE" "$BLUE_FILE"
           cp "$ORIGINAL_FILE" "$GREEN_FILE"
-          
-          # Actualizar archivos blue y green
           sed -i "s|quarkus-hello-world|quarkus-hello-world-blue|g" "$BLUE_FILE"
           sed -i "s|quarkus-hello-world|quarkus-hello-world-green|g" "$GREEN_FILE"
-          
-          # Actualizar la imagen en los archivos blue y green
           sed -i "s|116858595749.dkr.ecr.eu-west-1.amazonaws.com/quarkus:latest|116858595749.dkr.ecr.eu-west-1.amazonaws.com/quarkus:${IMAGE_TAG}|g" "$BLUE_FILE"
           sed -i "s|116858595749.dkr.ecr.eu-west-1.amazonaws.com/quarkus:latest|116858595749.dkr.ecr.eu-west-1.amazonaws.com/quarkus:${IMAGE_TAG}|g" "$GREEN_FILE"
-          
-          # Aplicar el despliegue green
           kubectl apply -f "$GREEN_FILE"
           echo "Despliegue 'green' aplicado con la imagen: 116858595749.dkr.ecr.eu-west-1.amazonaws.com/quarkus:${IMAGE_TAG}"
+          kubectl patch svc quarkus-hello-world-service -p '{"spec":{"selector":{"app.kubernetes.io/name":"quarkus-hello-world-green", "app.kubernetes.io/version":"green"}}}'
 
   integration-test:
     needs: build-push-deploy
