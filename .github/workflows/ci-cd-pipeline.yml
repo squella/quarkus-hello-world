@@ -1,7 +1,7 @@
 name: Build, Push to ECR, and Deploy to EKS with Quarkus
 
 on:
-  pull_request:
+  push:
     branches:
       - master
 
