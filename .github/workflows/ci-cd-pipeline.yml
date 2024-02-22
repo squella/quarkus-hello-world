@@ -58,7 +58,7 @@ jobs:
 #        run: mvn verify
 
   build-push-deploy:
-    needs: integration-test
+    needs: commit-stage
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
