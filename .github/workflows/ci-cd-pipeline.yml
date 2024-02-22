@@ -72,8 +72,8 @@ jobs:
         run: |
           kubectl apply -f target/kubernetes/kubernetes.yml
 
-  test:
-    timeout-minutes: 60
+  integration-tests:
+    needs: build-push-deploy
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
