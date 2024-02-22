@@ -74,9 +74,6 @@ jobs:
         run: |
           cp target/kubernetes/kubernetes.yml target/kubernetes/kubernetes-deploy.yml
           kubectl apply -f target/kubernetes/kubernetes-deploy.yml
-      #- name: Prepare Kubernetes Deployment Files
-      #  run: |
-      #    bash prepare-k8s-files.sh
 
       # Configurar kubectl para EKS
       - name: Configure kubectl for EKS
