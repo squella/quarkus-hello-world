@@ -28,6 +28,9 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
+      - name: Update Application Version
+        run: mvn versions:set -DnewVersion=${{ github.sha }}-SNAPSHOT
+
       - name: Build and Push Native Image to Amazon ECR
         env:
           IMAGE_TAG: ${{ github.sha }}
