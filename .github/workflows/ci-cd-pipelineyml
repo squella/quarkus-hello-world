@@ -1,7 +1,7 @@
 name: Build, Push to ECR, and Deploy to EKS with Quarkus
 
 on:
-  pull_request:
+  push:
     branches:
       - master
 
@@ -34,31 +34,31 @@ jobs:
       - name: Run PMD analysis
         run: mvn pmd:check
 
-  #  integration-test:
-  #    needs: commit-stage
-  #    runs-on: ubuntu-latest
-  #    steps:
-  #      - name: Checkout code
-  #        uses: actions/checkout@v2
-  #
-  #      - name: Set up JDK 17
-  #        uses: actions/setup-java@v2
-  #        with:
-  #          java-version: '17'
-  #          distribution: 'temurin'
-  #
-  #      - name: Cache Maven packages
-  #        uses: actions/cache@v2
-  #        with:
-  #          path: ~/.m2
-  #          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-  #          restore-keys: ${{ runner.os }}-m2
-  #
-  #      - name: Run integration tests
-  #        run: mvn verify
+  integration-test:
+    needs: commit-stage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Run integration tests
+        run: mvn verify
 
   build-push-deploy:
-    needs: commit-stage
+    needs: integration-test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -80,26 +80,15 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
-      #      - name: Update Application Version
-      #        run: mvn versions:set -DnewVersion=${{ github.sha }}-SNAPSHOT
-
       - name: Build and Push Native Image to Amazon ECR
         env:
           IMAGE_TAG: ${{ github.sha }}
         run: |
           ./mvnw clean package -Dquarkus.container-image.tag=${IMAGE_TAG}
 
-      - name: Prepare Kubernetes Deployment Files
-        run: |
-          bash prepare-k8s-files.sh
-
-      # Configurar kubectl para EKS
       - name: Configure kubectl for EKS
         run: aws eks update-kubeconfig --name quarkus --region ${{ secrets.AWS_REGION }}
 
-      #kubectl apply -f target/kubernetes/kubernetes.yml
-      # Despliegue en EKS
       - name: Deploy to EKS
         run: |
-          ./prepare-k8s-files.sh
-          ./deploy-green-loadbalancer.sh
+          kubectl apply -f target/kubernetes/kubernetes.yml
